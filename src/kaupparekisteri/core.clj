@@ -23,8 +23,10 @@
         db (mg/get-db conn "kaupparekisteri")]
     (loop [page 0]
       (let [data (-> (str url page) query :results)]
-        (do
-          (mc/insert-batch db "data" data)
-          (println data)
-          (Thread/sleep 10000))
-        (recur (+ page 1000))))))
+        (if (empty? data)
+          (println "Done.")
+          (do
+            (mc/insert-batch db "data" data)
+            (println (clojure.string/join "\n" (map :name data)))
+            (Thread/sleep 10000)
+            (recur (+ page 1000))))))))
