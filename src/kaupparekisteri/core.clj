@@ -8,7 +8,7 @@
             [monger.collection :as mc]
             [clj-time.local :as l]))
 
-#_(def url1 "http://avoindata.prh.fi/bis/v1?totalResults=false&maxResults=10&resultsFrom=10&companyRegistrationFrom=1800-01-01")
+(def url1 "http://avoindata.prh.fi/bis/v1?totalResults=false&maxResults=10&resultsFrom=10&companyRegistrationFrom=1800-01-01")
 
 (def url "http://avoindata.prh.fi/bis/v1?totalResults=false&maxResults=1000&companyRegistrationFrom=1800-01-01&resultsFrom=")
 
@@ -18,11 +18,14 @@
 (defn extract-names [res]
   (->> res :results (map :name)))
 
+(defn set-id [item]
+  (clojure.set/rename-keys item {:businessId :_id}))
+
 (defn fetch-all []
   (let [conn (mg/connect)
         db (mg/get-db conn "kaupparekisteri")]
     (loop [page 0]
-      (let [data (-> (str url page) query :results)]
+      (let [data (->> (str url page) query :results (map set-id))]
         (if (empty? data)
           (println "Done.")
           (do
