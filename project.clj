@@ -7,5 +7,6 @@
                  [clj-http "3.5.0"]
                  [com.novemberain/monger "3.1.0"]
                  [org.clojure/data.json "0.2.6"]
+                 [incanter "1.5.7"]
                  [org.clojure/data.csv "0.1.3"]
                  [clj-time "0.13.0"]])
