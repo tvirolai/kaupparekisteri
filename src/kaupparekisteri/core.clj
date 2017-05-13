@@ -36,10 +36,10 @@
     (str "http://avoindata.prh.fi/bis/v1?totalResults=true&maxResults=1000&companyRegistrationFrom=" startdate
          "&companyRegistrationTo=" lastdate)))
 
-(defn fetch-all []
+(defn fetch-all [start]
   (let [conn (mg/connect)
         db (mg/get-db conn "kauppa")]
-    (loop [begin 5]
+    (loop [begin start]
       (let [date (previousdate begin)
             data (client/get (parse-query begin))
             resultset (parse-response data)
@@ -48,6 +48,6 @@
           "Done."
           (do
             (mc/insert-batch db "data" resultset)
-            (println (str "Fetched " (count resultset) " results (" (first dates) " - " (last dates)")"))
+            (println (str "Fetched " (count resultset) " results (" (first dates) " - " (last dates)", that is " begin " days...)"))
             (Thread/sleep 3000)
             (recur (+ begin 5))))))))
