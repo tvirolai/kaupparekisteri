@@ -2,7 +2,6 @@
   (:require [clj-http.client :as client]
             [clojure.data.json :as json]
             [clojure.string :as s]
-            [clojure.data.csv :as csv]
             [clj-time.core :as t]
             [clj-time.format :as f]
             [monger.core :as mg]

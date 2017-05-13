@@ -63,6 +63,17 @@
        (i/$ 0)
        set))
 
+(defn names-to-matrix []
+  (->> (load-data :onlynames)
+       (map (comp seq s/lower-case))
+       (i/to-dataset)
+       (i/rename-cols {0 :0
+                       1 :1
+                       2 :2
+                       3 :3
+                       4 :4
+                       5 :5})))
+
 (defn print-fitting! [output]
   (loop [data (load-data :strictlyfittingnames)]
     (if (empty? data)
