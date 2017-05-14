@@ -63,6 +63,11 @@
        (i/$ 0)
        set))
 
+(defn charmatrix-to-freqtable [cmatrix]
+  (let [charcounts (map #(frequencies (i/$ % cmatrix)) (range 6))
+        totalcount (->> charcounts first vals (reduce +))]
+    (map (fn [ccount] (into {} (for [[k v] ccount] [k (/ v totalcount)]))) charcounts)))
+
 (defn names-to-matrix []
   (->> (load-data :onlynames)
        (map (comp seq s/lower-case))
@@ -72,7 +77,9 @@
                        2 :2
                        3 :3
                        4 :4
-                       5 :5})))
+                       5 :5})
+       (charmatrix-to-freqtable)
+       (map clojure.set/map-invert)))
 
 (defn print-fitting! [output]
   (loop [data (load-data :strictlyfittingnames)]
