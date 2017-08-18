@@ -11,7 +11,7 @@
 (def time-formatter
   (f/formatter "yyyy-MM-dd"))
 
-(defn previousdate 
+(defn previousdate
  "Returns a date object for a date [days] prior to present."
  [days]
   (-> days t/days t/ago))
@@ -28,10 +28,10 @@
 (defn parse-query
   "Takes two integers, which denote the time range for the query as days from the present.
   Returns a parsed query string, which fetches results from a five-day range."
-  [start]
+  [start daycount]
   (let [formatter (partial f/unparse time-formatter)
         startdate (->> start previousdate formatter)
-        lastdate (->> (- start 5) previousdate formatter)]
+        lastdate (->> (- start daycount) previousdate formatter)]
     (str "http://avoindata.prh.fi/bis/v1?totalResults=true&maxResults=1000&companyRegistrationFrom=" startdate
          "&companyRegistrationTo=" lastdate)))
 
@@ -40,7 +40,7 @@
         db (mg/get-db conn "kauppa")]
     (loop [begin start]
       (let [date (previousdate begin)
-            data (client/get (parse-query begin))
+            data (client/get (parse-query begin 8))
             resultset (parse-response data)
             dates (re-seq #"\d{4}-\d{2}-\d{2}" (parse-query begin))]
         (if (t/after? end-date date)
@@ -48,5 +48,5 @@
           (do
             (mc/insert-batch db "data" resultset)
             (println (str "Fetched " (count resultset) " results (" (first dates) " - " (last dates)", that is " begin " days...)"))
-            (Thread/sleep 3000)
-            (recur (+ begin 5))))))))
+            (Thread/sleep 2000)
+            (recur (+ begin 8))))))))
